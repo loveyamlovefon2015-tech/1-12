@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ตามล่าขุมทรัพย์ 12 ชนิดคำ</title>
+  <style>
+    :root {
+      --ink: #352c26;
+      --muted: #71685d;
+      --green: #368353;
+      --green-dark: #23643b;
+      --gold: #f3c45b;
+      --paper: #fffaf0;
+      --line: #e7d8b8;
+      --shadow: 0 12px 30px #49351f24;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: linear-gradient(160deg, #bde6f1, #d9efc6 48%, #fff0c8);
+    }
+    button { font: inherit; }
+
+    .app {
+      width: min(1120px, calc(100% - 18px));
+      margin: 9px auto;
+      overflow: hidden;
+      border: 5px solid #87532d;
+      border-radius: 22px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    header {
+      padding: 18px 14px;
+      text-align: center;
+      color: #fff4bd;
+      background: repeating-linear-gradient(0deg, #704322 0 12px, #80502c 12px 24px);
+      border-bottom: 5px solid #bd874a;
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 5vw, 2.8rem);
+      text-shadow: 0 3px #4e2a13;
+    }
+    header p { margin: 5px 0 0; color: #fff9df; font-weight: 700; }
+
+    .statusbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 15px;
+      background: #fffdf7;
+      border-bottom: 1px solid var(--line);
+    }
+    .pills { display: flex; gap: 7px; flex-wrap: wrap; }
+    .pill {
+      padding: 6px 11px;
+      border: 1px solid #e8d9ad;
+      border-radius: 999px;
+      background: #fff2c8;
+      font-size: .88rem;
+      font-weight: 850;
+    }
+    main { padding: 15px; }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fffdf7;
+      box-shadow: 0 5px 15px #523b1b10;
+    }
+
+    .welcome {
+      padding: 25px 16px;
+      text-align: center;
+      background: linear-gradient(140deg, #e1f6df, #fff2c9 60%, #ffe1e7);
+    }
+    .welcome h2 { margin: 0 0 7px; font-size: clamp(1.5rem, 4vw, 2.2rem); }
+    .welcome p { max-width: 700px; margin: auto; color: var(--muted); line-height: 1.65; }
+    .characters {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 800px;
+      margin: 18px auto;
+    }
+    .character-card {
+      cursor: pointer;
+      padding: 12px 8px;
+      border: 2px solid #e8dcc5;
+      border-radius: 16px;
+      background: white;
+      color: var(--ink);
+      transition: .15s;
+    }
+    .character-card:hover { transform: translateY(-2px); border-color: #58a36b; }
+    .character-card.selected { border-color: #39925a; background: #e9f8e9; box-shadow: 0 0 0 3px #d5efdc; }
+    .portrait { display: block; width: 76px; height: 82px; margin: auto; }
+    .character-card strong, .character-card small { display: block; }
+    .character-card small { color: var(--muted); }
+
+    .btn {
+      cursor: pointer;
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-weight: 900;
+    }
+    .btn-primary { color: white; background: var(--green); box-shadow: 0 4px var(--green-dark); }
+    .btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn-light { color: var(--ink); background: white; border: 1px solid var(--line); }
+    .btn-soft { color: var(--green-dark); background: #eaf5df; border: 1px solid #cfe2bd; }
+    .actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .center { text-align: center; }
+    .small-note { margin: 12px 0 0; color: var(--muted); font-size: .9rem; text-align: center; }
+
+    .map-intro {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 15px;
+      margin-bottom: 12px;
+      background: #fffdf7;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+    }
+    .map-intro h2 { margin: 0 0 3px; font-size: 1.15rem; }
+    .map-intro p { margin: 0; color: var(--muted); }
+
+    .map {
+      position: relative;
+      width: min(850px, 100%);
+      margin: auto;
+      overflow: hidden;
+      aspect-ratio: 900 / 1160;
+      border: 7px solid #d5a45d;
+      border-radius: 18px;
+      background: #c9e8a7;
+      box-shadow: inset 0 0 0 4px #fff0c5, 0 8px 18px #3f331c26;
+    }
+    .map svg.terrain { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .map-title {
+      position: absolute;
+      z-index: 3;
+      top: 2%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 90%;
+      padding: 7px 15px;
+      border: 3px solid #e9b653;
+      border-radius: 11px;
+      background: #70401f;
+      color: #ffe976;
+      font-weight: 950;
+      font-size: clamp(.85rem, 2.5vw, 1.2rem);
+      text-shadow: 1px 2px #40220d;
+      box-shadow: 0 4px #4d2a15;
+    }
+    .marker {
+      position: absolute;
+      z-index: 5;
+      width: clamp(43px, 7.3vw, 64px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      transform: translate(-50%, -50%);
+      padding: 0;
+      border: 3px solid white;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #fff09b, #f3a935);
+      color: #513512;
+      box-shadow: 0 4px #9a5d25, 0 6px 10px #49321e44;
+      cursor: pointer;
+      transition: transform .16s;
+    }
+    .marker:hover:not(:disabled) { transform: translate(-50%, -50%) scale(1.12); }
+    .marker:disabled { cursor: not-allowed; filter: grayscale(.45); opacity: .78; }
+    .marker.done { background: linear-gradient(145deg, #b4f0a8, #47ad65); box-shadow: 0 4px #287644; color: white; }
+    .marker .marker-icon { font-size: clamp(18px, 3.2vw, 27px); }
+    .marker .marker-num {
+      position: absolute;
+      right: -5px;
+      bottom: -5px;
+      display: grid;
+      place-items: center;
+      width: 21px;
+      height: 21px;
+      border: 2px solid white;
+      border-radius: 50%;
+      background: #814827;
+      color: white;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .map-label {
+      position: absolute;
+      z-index: 4;
+      max-width: 25%;
+      padding: 4px 7px;
+      border: 2px solid #d39a43;
+      border-radius: 8px;
+      background: #fff1a7;
+      color: #5b3b1a;
+      text-align: center;
+      font-size: clamp(.55rem, 1.6vw, .78rem);
+      font-weight: 900;
+      line-height: 1.15;
+      pointer-events: none;
+    }
+    .player-token {
+      position: absolute;
+      z-index: 7;
+      display: none;
+      width: clamp(52px, 9vw, 74px);
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%);
+      overflow: hidden;
+      border: 4px solid white;
+      border-radius: 50%;
+      background: #ffdf73;
+      box-shadow: 0 5px #714629, 0 7px 12px #29201455;
+      transition: left .5s ease, top .5s ease;
+      pointer-events: none;
+    }
+    .player-token .portrait { width: 100%; height: 100%; }
+    .start-sign, .treasure-sign {
+      position: absolute;
+      z-index: 4;
+      padding: 7px 10px;
+      border: 2px solid white;
+      border-radius: 9px;
+      color: white;
+      font-weight: 950;
+      text-shadow: 1px 2px #57320e;
+      pointer-events: none;
+    }
+    .start-sign { left: 4%; bottom: 8%; background: #df563b; }
+    .treasure-sign { right: 3%; bottom: 10%; background: #d79420; }
+    .legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin: 12px auto;
+      color: #655b4b;
+      font-size: .88rem;
+      font-weight: 800;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: #231d15a8;
+    }
+    .overlay.show { display: flex; }
+    .modal {
+      width: min(680px, 100%);
+      max-height: 94vh;
+      overflow: auto;
+      padding: 18px;
+      border: 5px solid #d8aa5d;
+      border-radius: 19px;
+      background: #fffdf6;
+      box-shadow: 0 15px 40px #1f170f70;
+    }
+    .modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .modal-head small { color: #8a6532; font-weight: 850; }
+    .modal-head h2 { margin: 2px 0 0; color: #347b4e; }
+    .close {
+      flex: 0 0 auto;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 50%;
+      background: #f2e7d2;
+      font-size: 1.3rem;
+      font-weight: 900;
+    }
+    .guide-note {
+      margin: 12px 0;
+      padding: 10px 12px;
+      border-radius: 11px;
+      background: #edf7df;
+      line-height: 1.55;
+    }
+    details.lesson {
+      margin: 12px 0;
+      border: 1px solid #d5e6bd;
+      border-radius: 12px;
+      background: #f6ffec;
+    }
+    details.lesson summary {
+      cursor: pointer;
+      padding: 11px 13px;
+      color: #347b4e;
+      font-weight: 900;
+    }
+    .lesson-body {
+      padding: 0 15px 13px;
+      line-height: 1.65;
+    }
+    .lesson-body h3 { margin: 10px 0 4px; font-size: 1rem; }
+    .lesson-body ul { margin: 4px 0; padding-left: 22px; }
+    .lesson-body li { margin: 4px 0; }
+    .lesson-body p { margin: 6px 0; }
+
+    .quest {
+      padding: 14px;
+      border: 1px solid #eadcbd;
+      border-radius: 13px;
+      background: white;
+    }
+    .quest-kicker { color: #9a6a22; font-size: .86rem; font-weight: 900; }
+    .question { margin: 6px 0 13px; font-size: 1.16rem; font-weight: 900; line-height: 1.5; }
+    .answers { display: grid; gap: 8px; }
+    .answer {
+      cursor: pointer;
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e8dfcb;
+      border-radius: 10px;
+      background: #fffefa;
+      text-align: left;
+      color: var(--ink);
+      font-weight: 750;
+    }
+    .answer:hover:not(:disabled) { border-color: #67a96d; background: #f1fff0; }
+    .answer:disabled { cursor: default; }
+    .answer.correct { border-color: #4aa25d; background: #e6f8e5; }
+    .answer.wrong { border-color: #d97e68; background: #fff0e8; }
+    .feedback { display: none; margin-top: 11px; padding: 10px 12px; border-radius: 10px; line-height: 1.55; }
+    .feedback.show { display: block; }
+    .feedback.good { background: #e6f8e5; }
+    .feedback.try { background: #fff1dd; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+    .end-card {
+      padding: 28px 16px;
+      text-align: center;
+      border-radius: 18px;
+      background: linear-gradient(140deg, #e1f6df, #fff2c9, #ffe1e7);
+    }
+    .end-card .big { font-size: 4rem; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 650px) {
+      main { padding: 9px; }
+      .app { border-width: 3px; }
+      .characters { grid-template-columns: repeat(2, 1fr); }
+      .map-intro { align-items: flex-start; flex-direction: column; }
+      .map-label { max-width: 28%; padding: 3px 4px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🗺️ ตามล่าขุมทรัพย์ 12 ชนิดคำ</h1>
+    <p>เดินตามเส้นทาง ทำภารกิจ แล้วเปิดหีบสมบัติ!</p>
+  </header>
+
+  <div class="statusbar">
+    <strong id="welcome">เลือกนักสำรวจก่อนออกเดินทาง</strong>
+    <div class="pills">
+      <span class="pill" id="score">⭐ 0 คะแนน</span>
+      <span class="pill" id="progress">🗝️ 0/12 จุดหมาย</span>
+    </div>
+  </div>
+
+  <main>
+    <section id="chooseScreen" class="panel welcome">
+      <h2>เลือกนักสำรวจร่วมทาง</h2>
+      <p>ตัวละครที่เลือกจะเป็นตัวกลม ๆ เดินบนแผนที่ ส่วนผู้มอบภารกิจในแต่ละด่านเป็นตัวละครคนละตัว</p>
+      <div class="characters" id="characterList"></div>
+      <button class="btn btn-primary" id="startBtn" disabled onclick="startGame()">เริ่มตามล่าสมบัติ 🧭</button>
+      <div class="actions">
+        <button class="btn btn-light" id="resetBtn" onclick="resetGame()">เริ่มเกมใหม่ / ล้างความคืบหน้า</button>
+      </div>
+    </section>
+
+    <section id="mapScreen" class="hidden">
+      <div class="map-intro panel">
+        <div>
+          <h2 id="mapWelcome">พร้อมออกเดินทางหรือยัง?</h2>
+          <p>แตะจุดหมายสีทองเพื่อทำภารกิจ จุดสีเขียวคือด่านที่ผ่านแล้ว</p>
+        </div>
+        <button class="btn btn-light" onclick="changeCharacter()">เปลี่ยนตัวละคร</button>
+      </div>
+
+      <div class="map" id="map">
+        <svg class="terrain" viewBox="0 0 900 1160" preserveAspectRatio="none" aria-label="ภาพแผนที่เกาะ">
+          <defs>
+            <linearGradient id="grass" x2="0" y2="1">
+              <stop stop-color="#c5e99a"/><stop offset="1" stop-color="#8fc56f"/>
+            </linearGradient>
+            <linearGradient id="river" x2="0" y2="1">
+              <stop stop-color="#a1e9f0"/><stop offset="1" stop-color="#4db6cf"/>
+            </linearGradient>
+          </defs>
+          <rect width="900" height="1160" fill="url(#grass)"/>
+          <path d="M0 0H900V210Q720 180 590 220T310 210T0 240Z" fill="#9bd9ed"/>
+          <circle cx="765" cy="82" r="42" fill="#ffe278"/>
+          <g fill="#fffdf3">
+            <ellipse cx="145" cy="135" rx="60" ry="17"/><ellipse cx="170" cy="122" rx="30" ry="23"/>
+            <ellipse cx="350" cy="165" rx="53" ry="15"/><ellipse cx="382" cy="151" rx="29" ry="21"/>
+          </g>
+          <path d="M350 220 510 40 675 220Z" fill="#7595ad"/>
+          <path d="M455 103 510 40 570 111 540 98 516 121 492 99Z" fill="#fff9e8"/>
+          <path d="M550 220 674 112 800 220Z" fill="#658792"/>
+          <path d="M0 220Q180 194 320 234T600 220T900 235V1160H0Z" fill="url(#grass)"/>
+
+          <!-- แม่น้ำ -->
+          <path d="M0 625C140 575 222 684 340 642S520 585 640 650 792 720 900 675V800C770 835 675 760 545 740S340 815 215 755 90 730 0 780Z"
+                fill="url(#river)" stroke="#effff3" stroke-width="9"/>
+          <path d="M10 680C155 633 239 733 371 683S561 638 760 709" fill="none" stroke="#dcfbff" stroke-width="7"/>
+
+          <!-- ทางเดิน -->
+          <path d="M95 1050C185 1082 300 1050 350 975S585 1010 745 915
+                   C850 850 740 760 610 745S360 785 260 690
+                   C175 610 275 520 420 535S655 515 740 430
+                   C820 350 730 280 625 292S390 330 230 265"
+                fill="none" stroke="#fff4cc" stroke-width="35" stroke-linecap="round"/>
+          <path d="M95 1050C185 1082 300 1050 350 975S585 1010 745 915
+                   C850 850 740 760 610 745S360 785 260 690
+                   C175 610 275 520 420 535S655 515 740 430
+                   C820 350 730 280 625 292S390 330 230 265"
+                fill="none" stroke="#cf6341" stroke-width="12" stroke-linecap="round" stroke-dasharray="2 27"/>
+
+          <!-- โรงเรียน -->
+          <g transform="translate(80 300)">
+            <rect x="4" y="45" width="160" height="108" rx="8" fill="#fff0bd" stroke="#9b6036" stroke-width="7"/>
+            <path d="M-12 52 84 0 178 52Z" fill="#d95341" stroke="#9b6036" stroke-width="7"/>
+            <rect x="65" y="94" width="38" height="59" fill="#88502f"/>
+            <g fill="#89cbe6" stroke="#9b6036" stroke-width="4">
+              <rect x="22" y="70" width="28" height="27"/><rect x="119" y="70" width="28" height="27"/>
+            </g>
+            <text x="84" y="46" text-anchor="middle" font-size="17" font-weight="900" fill="#563923">โรงเรียน</text>
+          </g>
+
+          <!-- ร้านหนังสือ -->
+          <g transform="translate(65 800)">
+            <rect x="5" y="42" width="158" height="100" rx="8" fill="#ffe7a7" stroke="#87552e" stroke-width="7"/>
+            <path d="M-10 48 84 0 178 48Z" fill="#5683bd" stroke="#87552e" stroke-width="7"/>
+            <rect x="65" y="91" width="38" height="51" fill="#87552e"/>
+            <text x="84" y="77" text-anchor="middle" font-size="16" font-weight="900" fill="#563923">ร้านหนังสือ</text>
+          </g>
+
+          <!-- ต้นไม้ -->
+          <g fill="#3c8b4c">
+            <circle cx="675" cy="485" r="54"/><circle cx="723" cy="510" r="57"/><circle cx="650" cy="532" r="54"/>
+            <circle cx="335" cy="390" r="39"/><circle cx="380" cy="397" r="42"/>
+            <circle cx="815" cy="610" r="48"/><circle cx="110" cy="595" r="45"/>
+            <circle cx="155" cy="610" r="38"/><circle cx="790" cy="1000" r="45"/>
+          </g>
+          <g fill="#65ad58">
+            <circle cx="666" cy="474" r="33"/><circle cx="720" cy="495" r="35"/><circle cx="647" cy="523" r="34"/>
+            <circle cx="338" cy="384" r="25"/><circle cx="380" cy="390" r="30"/>
+            <circle cx="813" cy="600" r="29"/><circle cx="111" cy="584" r="30"/>
+          </g>
+          <g stroke="#80512f" stroke-width="12" stroke-linecap="round">
+            <path d="M684 530v60"/><path d="M356 408v43"/><path d="M815 636v45"/>
+          </g>
+
+          <!-- สะพาน -->
+          <g transform="translate(400 711) rotate(-8)">
+            <rect width="180" height="42" rx="5" fill="#9a6135" stroke="#654125" stroke-width="5"/>
+            <path d="M30 2v38M70 2v38M110 2v38M150 2v38" stroke="#dba45e" stroke-width="7"/>
+          </g>
+
+          <!-- แคมป์เริ่มต้น -->
+          <circle cx="210" cy="1000" r="56" fill="#f3cf75" opacity=".7"/>
+          <path d="M182 1031 210 979 238 1031Z" fill="#f07943" stroke="#87502c" stroke-width="5"/>
+          <path d="M194 1031 210 996 226 1031Z" fill="#ffe16b"/>
+
+          <!-- หีบสมบัติ -->
+          <g transform="translate(670 995)">
+            <ellipse cx="75" cy="116" rx="105" ry="24" fill="#d8a940" opacity=".45"/>
+            <path d="M14 51Q18 4 78 4t65 47v18H14Z" fill="#a95427" stroke="#653516" stroke-width="8"/>
+            <rect x="10" y="55" width="140" height="83" rx="10" fill="#bf702e" stroke="#653516" stroke-width="8"/>
+            <path d="M44 10v128M118 10v128" stroke="#f4c04e" stroke-width="13"/>
+            <rect x="65" y="67" width="30" height="38" rx="7" fill="#ffe071" stroke="#80501f" stroke-width="5"/>
+            <circle cx="80" cy="83" r="5" fill="#80501f"/>
+            <path d="m-5 25 7-16 7 16 16 7-16 7-7 16-7-16-16-7z" fill="#ffdf58"/>
+          </g>
+
+          <!-- ดอกไม้ตกแต่ง -->
+          <g fill="#fff8d7">
+            <circle cx="280" cy="580" r="6"/><circle cx="293" cy="580" r="6"/><circle cx="286" cy="568" r="6"/>
+            <circle cx="120" cy="730" r="6"/><circle cx="133" cy="730" r="6"/><circle cx="126" cy="718" r="6"/>
+            <circle cx="755" cy="865" r="6"/><circle cx="768" cy="865" r="6"/><circle cx="761" cy="853" r="6"/>
+          </g>
+        </svg>
+        <div class="map-title">เกาะมหัศจรรย์แห่งชนิดคำ</div>
+        <div class="start-sign">🚩 START</div>
+        <div class="treasure-sign">💎 สมบัติอยู่ตรงนี้!</div>
+        <div id="playerToken" class="player-token"></div>
+
+        <div class="map-label" style="left:12%;top:68%">ป่าคำนาม</div>
+        <div class="map-label" style="left:38%;top:77%">สะพานสรรพนาม</div>
+        <div class="map-label" style="left:67%;top:64%">ลานกริยา</div>
+        <div class="map-label" style="left:74%;top:51%">หอคำช่วยกริยา</div>
+        <div class="map-label" style="left:35%;top:49%">สวนวิเศษณ์</div>
+        <div class="map-label" style="left:12%;top:54%">ตลาดจำนวน</div>
+        <div class="map-label" style="left:67%;top:37%">ตลาดคำกำหนด</div>
+        <div class="map-label" style="left:75%;top:27%">ท่าเรือบุพบท</div>
+        <div class="map-label" style="left:45%;top:31%">สะพานคำเชื่อม</div>
+        <div class="map-label" style="left:12%;top:31%">โรงละครคำลงท้าย</div>
+        <div class="map-label" style="left:39%;top:22%">ถ้ำคำอุทาน</div>
+        <div class="map-label" style="left:69%;top:17%">ปราสาทคำปฏิเสธ</div>
+      </div>
+
+      <div class="legend">
+        <span>🟡 จุดหมายที่เล่นได้</span>
+        <span>🟢 ผ่านแล้ว</span>
+        <span>🔒 ยังล็อกอยู่</span>
+        <span>🧍 ตัวกลมคือตัวละครที่หนูเลือก</span>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <small id="stageKicker"></small>
+        <h2 id="stageTitle"></h2>
+      </div>
+      <button class="close" onclick="closeModal()" aria-label="ปิด">×</button>
+    </div>
+
+    <div id="guideNote" class="guide-note"></div>
+
+    <details class="lesson" open>
+      <summary>📖 อ่านบทเรียนของด่านนี้</summary>
+      <div id="lessonBody" class="lesson-body"></div>
+    </details>
+
+    <section class="quest">
+      <div class="quest-kicker" id="questKicker"></div>
+      <div class="question" id="question"></div>
+      <div class="answers" id="answers"></div>
+      <div id="feedback" class="feedback"></div>
+      <div class="modal-actions">
+        <button id="retryBtn" class="btn btn-light hidden" onclick="retryQuestion()">ลองข้อนี้อีกครั้ง</button>
+        <button id="nextBtn" class="btn btn-primary hidden" onclick="nextQuestion()">ข้อต่อไป ➜</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const explorers = [
+  { name: "มะลิ", job: "นักตามรอย", skin: "#e9a47e", hair: "#53342c", shirt: "#52a66b", hairStyle: 0, accessory: "🔎" },
+  { name: "ขุนเขา", job: "นักปีนเขา", skin: "#c9845c", hair: "#30241f", shirt: "#4b8db5", hairStyle: 1, accessory: "🧭" },
+  { name: "ฟ้าใส", job: "นักอ่านแผนที่", skin: "#f0b18c", hair: "#58372b", shirt: "#7b72bd", hairStyle: 2, accessory: "🗺️" },
+  { name: "ต้นกล้า", job: "นักแก้ปริศนา", skin: "#d99a70", hair: "#3d2c23", shirt: "#d29a3d", hairStyle: 1, accessory: "🧩" },
+  { name: "ดาวเหนือ", job: "นักสำรวจถ้ำ", skin: "#f0ae8d", hair: "#49332d", shirt: "#df6f72", hairStyle: 2, accessory: "✨" },
+  { name: "เมฆ", job: "นักเดินทาง", skin: "#c9855e", hair: "#30231f", shirt: "#508e8c", hairStyle: 0, accessory: "🎒" }
+];
+
+const guides = [
+  "แม่หมอใบไม้", "เจ้าชายแห่งสายลม", "ช่างตีดาบคำกริยา", "ผู้เฝ้าหอนาฬิกา",
+  "นางฟ้าสวนวิเศษณ์", "พ่อค้าตาชั่งทอง", "แม่ค้าชี้ของ", "กัปตันเรือกระดาษ",
+  "ช่างต่อสะพาน", "ผู้กำกับโรงละคร", "ผู้ฟังเสียงสะท้อน", "ผู้พิทักษ์ปราสาท"
+];
+
+const levels = [
+  {
+    title: "ป่าคำนาม", icon: "🌳",
+    summary: "คำนามหมายถึงคน สัตว์ สิ่งของ สภาพธรรมชาติ สถานที่ ความคิด ความเชื่อ ค่านิยม และสิ่งที่เป็นรูปธรรมหรือนามธรรม",
+    lesson: [
+      "คำนามสามัญใช้เรียกสิ่งทั่วไป เช่น คน บ้าน วัด โรงเรียน สัตว์ ข้าว ช้าง แมลง คำนามสามัญมีความหมายกว้าง เช่น ผลไม้ สัตว์ ดอกไม้ และความหมายแคบ เช่น มะม่วง ฟ้าลั่น เขียวเสวย กร่าง",
+      "คำนามวิสามัญเป็นชื่อเฉพาะของบุคคลหรือสิ่งใดสิ่งหนึ่ง เช่น สุพรรณี ฟูจิ พระศรีรัตนศาสดาราม ประเทศไทย จังหวัดอุดรธานี โรงเรียนหนองหว้าประชาสรรค์",
+      "คำลักษณนามใช้บอกลักษณะของคำนามหรือคำกริยา อาจอยู่หน้าคำนาม เช่น ฝูงผึ้ง, หลังคำกริยา เช่น ช่วยหยุดที, หรือหลังจำนวน เช่น เก้าอี้ 10 ตัว และใช้บอกกลุ่ม เช่น นักเรียน 2 กลุ่ม",
+      "คำอาการนามเกิดจากการเติม การ- หรือ ความ-: การ- มักนำหน้าคำกริยา เช่น การนอน การกิน การเดิน การอ่าน; ความ- มักนำหน้าคำวิเศษณ์ เช่น ความรัก ความงาม ความดี",
+      "คำอาการนามทำหน้าที่เป็นคำนามในประโยค แม้มีรากศัพท์มาจากคำกริยาหรือคำวิเศษณ์"
+    ],
+    questions: [
+      { q: "คำใดเป็นคำนามวิสามัญ?", choices: ["โรงเรียน", "ประเทศไทย", "แมลง"], answer: 1, explain: "ประเทศไทยเป็นชื่อเฉพาะของประเทศ จึงเป็นคำนามวิสามัญ" },
+      { q: "ใน “ฝูงผึ้งเข้าจู่โจม” คำว่า “ฝูง” เป็นอะไร?", choices: ["คำลักษณนาม", "คำกริยา", "คำสรรพนาม"], answer: 0, explain: "ฝูงบอกลักษณะเป็นกลุ่มของผึ้ง ทำหน้าที่เป็นคำลักษณนาม" },
+      { q: "คำใดเป็นคำอาการนามที่เติม การ-?", choices: ["การอ่าน", "อ่าน", "หนังสือ"], answer: 0, explain: "การอ่านเกิดจากการเติม การ- หน้าคำกริยาอ่าน และทำหน้าที่เป็นคำนาม" }
+    ]
+  },
+  {
+    title: "สะพานสรรพนาม", icon: "🌉",
+    summary: "คำสรรพนามใช้แทนคำนาม และทำหน้าที่เป็นส่วนหลักของนามวลีได้เช่นเดียวกับคำนาม",
+    lesson: [
+      "บุรุษสรรพนามที่ 1 แทนผู้พูด เช่น กระผม ผม ดิฉัน หนู ข้าพเจ้า; บุรุษที่ 2 แทนคู่สนทนา เช่น คุณ ท่าน นาย เธอ; บุรุษที่ 3 แทนผู้ถูกกล่าวถึง เช่น เขา ท่าน มัน",
+      "คำสรรพนามถามมี 3 คำ ได้แก่ ใคร อะไร ไหน ใช้แทนนามและแสดงคำถาม เช่น ใครเขียนจดหมาย, อะไรตกน้ำ",
+      "คำสรรพนามชี้เฉพาะมี 8 คำ ได้แก่ นี่ นั่น โน่น นู่น นี้ นั้น โน้น นู้น ใช้แทนนามและบอกระยะใกล้ไกล",
+      "คำสรรพนามไม่ชี้เฉพาะไม่กำหนดแน่นอนว่าหมายถึงใครหรือสิ่งใด เช่น ใคร ไร ไหน",
+      "คำสรรพนามแยกฝ่ายมี ต่าง บ้าง กัน: ต่างแสดงว่าแต่ละฝ่ายทำกริยาเดียวกัน; บ้างแสดงว่าแต่ละฝ่ายแยกกันทำกริยาต่างกัน; กันแสดงการทำร่วมกันหรือทำกริยาเดียวกัน"
+    ],
+    questions: [
+      { q: "คำว่า “ผม” ใช้แทนใคร?", choices: ["ผู้พูด", "ผู้ฟัง", "สิ่งของ"], answer: 0, explain: "ผมเป็นบุรุษสรรพนามที่ 1 ใช้แทนผู้พูด" },
+      { q: "คำใดเป็นคำสรรพนามถามตามเนื้อหา?", choices: ["ใคร", "ข้าง", "แล้ว"], answer: 0, explain: "ใครเป็นคำสรรพนามถาม ใช้แทนนามและแสดงคำถาม" },
+      { q: "ใน “นักเรียนช่วยกันทำความสะอาด” คำว่า “กัน” แสดงอะไร?", choices: ["ทำกริยาร่วมกัน", "บอกจำนวน", "บอกสถานที่"], answer: 0, explain: "กันแสดงว่าผู้ที่กล่าวถึงร่วมกันทำกริยา" }
+    ]
+  },
+  {
+    title: "ลานกริยา", icon: "🏃",
+    summary: "คำกริยาเป็นส่วนหลักของกริยาวลี แสดงการกระทำ การเคลื่อนไหว สภาพ หรือเหตุการณ์ที่เกิดขึ้นกับประธาน",
+    lesson: [
+      "กริยาที่มีหน่วยกรรมแบ่งเป็นกริยาสกรรมและกริยาทวิกรรม. สกรรมมีหน่วยกรรมหนึ่งตำแหน่ง เช่น กินขนม ฟังข่าว อ่านหนังสือ เกี่ยวข้าว",
+      "ทวิกรรมมีนามวลีตามหลังสองตำแหน่ง คือกรรมตรงและกรรมรอง เช่น พี่ป้อนข้าวน้อง (ข้าว=กรรมตรง, น้อง=กรรมรอง), พ่อให้เงินลูก",
+      "กริยาที่ไม่มีหน่วยกรรมแบ่งเป็น 4 ชนิด: อกรรมกริยา เช่น ตก ขึ้น ยืน เดิน เสียใจ; กริยาคุณศัพท์ เช่น ดี สวย สูง ใหญ่ เก่ง แข็งแรง",
+      "กริยาต้องเติมเต็มต้องมีหน่วยเติมเต็มตามหลัง เช่น เขาเหมือนพ่อมาก คำว่า พ่อ เป็นหน่วยเติมเต็ม ไม่ใช่กรรม",
+      "กริยานำอยู่หน้ากริยาอื่น เช่น อยาก ฝืน ดัด ตั้งใจ ห้าม กรุณา; กริยาตามอยู่หลังกริยาอื่น เช่น น้ำลดลงมากแล้ว"
+    ],
+    questions: [
+      { q: "ใน “ฉันกินขนม” คำว่า “ขนม” ทำหน้าที่อะไร?", choices: ["หน่วยกรรม", "หน่วยเติมเต็ม", "คำลงท้าย"], answer: 0, explain: "ขนมเป็นสิ่งที่ถูกกิน จึงเป็นหน่วยกรรมของกริยาสกรรมกิน" },
+      { q: "ใน “พ่อให้เงินลูก” คำว่า “ลูก” เป็นอะไร?", choices: ["กรรมรอง", "กรรมตรง", "คำวิเศษณ์"], answer: 0, explain: "ลูกเป็นผู้รับ ส่วนเงินเป็นสิ่งที่ถูกให้และเป็นกรรมตรง" },
+      { q: "ใน “เขาเหมือนพ่อมาก” คำว่า “พ่อ” เป็นอะไร?", choices: ["หน่วยเติมเต็ม", "หน่วยกรรม", "คำบุพบท"], answer: 0, explain: "เหมือนเป็นกริยาต้องเติมเต็ม พ่อจึงเป็นหน่วยเติมเต็ม" }
+    ]
+  },
+  {
+    title: "หอคำช่วยกริยา", icon: "🗼",
+    summary: "คำช่วยกริยาหรือกริยานุเคราะห์ไม่ใช่คำกริยา ไม่ปรากฏตามลำพัง และปรากฏร่วมกับคำกริยาอยู่หน้าคำกริยาเพื่อเพิ่มความหมายทางไวยากรณ์",
+    lesson: [
+      "บอกกาล: ได้ และ แล้ว ใช้กับเหตุการณ์ในอดีตหรือที่เสร็จแล้ว; กำลังบอกเหตุการณ์ปัจจุบัน; จะบอกเหตุการณ์อนาคต",
+      "บอกมาลา: คงแสดงการคาดคะเน; โปรดแสดงการขอร้อง; ต้องแสดงการบังคับหรือความจำเป็น",
+      "บอกวาจก: ถูก และ โดน แสดงความสัมพันธ์ที่ประธานเป็นผู้ได้รับผลจากการกระทำ เช่น เจ้านายถูกลูกน้องตำหนิ, เจ้าตูบโดนขังกรง",
+      "ตัวอย่าง: ฉันจะไปหาเขาพรุ่งนี้; นักเรียนกำลังทำแบบฝึกหัด; ฝนคงตก; โปรดรักษาความสะอาด; นักเรียนต้องส่งงาน",
+      "คำช่วยกริยาช่วยบอกข้อมูลทางไวยากรณ์ ไม่ได้แสดงการกระทำโดยตรงเหมือนกริยาหลัก"
+    ],
+    questions: [
+      { q: "ใน “นักเรียนกำลังทำแบบฝึกหัด” คำว่า “กำลัง” บอกอะไร?", choices: ["เหตุการณ์ปัจจุบัน", "การคาดคะเน", "การขอร้อง"], answer: 0, explain: "กำลังแสดงว่าการกระทำนั้นกำลังเกิดขึ้นในช่วงเวลาที่กล่าวถึง" },
+      { q: "คำว่า “โปรด” ใน “โปรดปิดประตู” แสดงอะไร?", choices: ["การขอร้อง", "การบอกอดีต", "การถูกกระทำ"], answer: 0, explain: "โปรดใช้แสดงการขอร้องให้ผู้ฟังปฏิบัติตาม" },
+      { q: "ใน “เจ้าตูบโดนขังกรง” คำว่า “โดน” เป็นคำช่วยกริยาบอกอะไร?", choices: ["วาจก", "อนาคต", "จำนวน"], answer: 0, explain: "โดนแสดงว่าเจ้าตูบเป็นฝ่ายได้รับผลจากการกระทำ" }
+    ]
+  },
+  {
+    title: "สวนวิเศษณ์", icon: "🌼",
+    summary: "คำวิเศษณ์ทำหน้าที่เป็นหน่วยขยายกริยา มักปรากฏหลังคำกริยา เพื่อทำให้ความหมายชัดเจนหรือมีรายละเอียดมากขึ้น",
+    lesson: [
+      "คำวิเศษณ์สามัญขยายกริยาโดยทั่วไป เช่น จัง แล้ว เอง ทีเดียว ที่สุด อย่างระมัดระวัง",
+      "คำวิเศษณ์ขยายเฉพาะขยายคำใดคำหนึ่งโดยเฉพาะ เช่น แดงแจ๋ เปียกซ่ก ดำปี๋ เหลืองอ๋อย ยาวเฟื้อย แหลมเปี๊ยบ แพงหูฉี่ คมกริบ กลมดิ๊ก",
+      "คำวิเศษณ์แสดงคำถามถามรายละเอียดของการกระทำหรือเหตุการณ์ เช่น ทำไม เหตุใด เพราะอะไร ไย ไฉน เมื่อไร อย่างไร",
+      "คำวิเศษณ์บอกเวลา เช่น เช้า สาย บ่าย ค่ำ ดึก กลางวัน กลางคืน พรุ่งนี้ วันนี้ มะรืนนี้ ปีที่แล้ว ปีหน้า ขณะนี้ ตะกี้",
+      "วิธีสังเกต: ดูว่าคำนั้นขยายกริยา บอกลักษณะหรือรายละเอียด ใช้ถามเหตุการณ์ หรือบอกเวลาที่เกิดเหตุการณ์"
+    ],
+    questions: [
+      { q: "ใน “แม่ทำกับข้าวเอง” คำว่า “เอง” ช่วยเน้นอะไร?", choices: ["ผู้กระทำทำด้วยตนเอง", "จำนวนอาหาร", "สถานที่"], answer: 0, explain: "เองเน้นว่าผู้กระทำทำด้วยตนเอง เป็นคำวิเศษณ์สามัญตามตัวอย่าง" },
+      { q: "คำใดเป็นคำวิเศษณ์ขยายเฉพาะ?", choices: ["เปียกซ่ก", "โรงเรียน", "ด้วย"], answer: 0, explain: "เปียกซ่กเป็นคำขยายเฉพาะที่ทำให้เห็นลักษณะชัดขึ้น" },
+      { q: "คำใดเป็นคำวิเศษณ์แสดงคำถาม?", choices: ["อย่างไร", "หนังสือ", "ห้า"], answer: 0, explain: "อย่างไรใช้ถามรายละเอียดเกี่ยวกับการกระทำหรือเหตุการณ์" }
+    ]
+  },
+  {
+    title: "ตลาดจำนวน", icon: "🧺",
+    summary: "คำที่เกี่ยวกับจำนวนแสดงจำนวน ปริมาณ หรือลำดับ แบ่งเป็นคำบอกจำนวน คำบอกลำดับ คำหน้าจำนวน และคำหลังจำนวน",
+    lesson: [
+      "คำบอกจำนวน เช่น หนึ่ง สอง สาม สี่ ห้า ทุก หลาย กี่ บาง ครึ่ง อาจเป็นจำนวนแน่นอนหรือไม่แน่นอน",
+      "คำบอกลำดับ เช่น แรก หน้า หลัง กลาง ที่หนึ่ง ที่สอง ที่สาม โหล่ บ๊วย รั้งท้าย",
+      "คำหน้าจำนวนปรากฏหน้าคำบอกจำนวน เช่น อีก สัก ตั้ง ทั้ง เพียง ประมาณ ราว เกือบ กว่า",
+      "คำหลังจำนวนปรากฏหลังคำบอกจำนวน เช่น กว่า เศษ พอดี ถ้วน",
+      "ตัวอย่างวิเคราะห์: แม่ซื้อผ้าอีก 2 ผืน (อีก=คำหน้าจำนวน, 2=คำบอกจำนวน, ผืน=ลักษณนาม); ผู้เข้าร่วมพันกว่าคน (พัน=จำนวน, กว่า=คำหลังจำนวน)"
+    ],
+    questions: [
+      { q: "ใน “แม่ซื้อผ้าอีก 2 ผืน” คำว่า “อีก” เป็นอะไร?", choices: ["คำหน้าจำนวน", "คำบอกลำดับ", "คำหลังจำนวน"], answer: 0, explain: "อีกปรากฏหน้าคำบอกจำนวน 2 จึงเป็นคำหน้าจำนวน" },
+      { q: "ใน “นักเรียนคนที่ 5” ตัวเลข 5 ใช้บอกอะไร?", choices: ["ลำดับ", "จำนวนผืน", "เครื่องมือ"], answer: 0, explain: "คนที่ 5 บอกตำแหน่งหรือลำดับ ไม่ใช่จำนวนคนที่มี" },
+      { q: "ใน “ไก่ตัวนี้หนัก 3 กิโลพอดี” คำว่า “พอดี” เป็นอะไร?", choices: ["คำหลังจำนวน", "คำหน้าจำนวน", "คำลักษณนาม"], answer: 0, explain: "พอดีปรากฏหลังจำนวนเพื่อแสดงว่าน้ำหนักตรงตามจำนวน" }
+    ]
+  },
+  {
+    title: "ตลาดคำบอกกำหนด", icon: "🛍️",
+    summary: "คำบอกกำหนดเป็นคำขยายนาม อยู่ท้ายสุดของนามวลี เพื่อกำหนดว่าคำนามเป็นสิ่งใด ชี้เฉพาะหรือไม่ชี้เฉพาะ",
+    lesson: [
+      "คำบอกกำหนดชี้เฉพาะ หรือ นิยมวิเศษณ์ ระบุคำนามและระยะใกล้ไกล เช่น นี่ นั่น โน่น นู่น นี้ นั้น โน้น นู้น",
+      "ตัวอย่าง: หนังสือเล่มนี้, รถคันนู้น, บ้านหลังนั้น, นักเรียนห้องนี้",
+      "คำบอกกำหนดไม่ชี้เฉพาะ หรือ อนิยมวิเศษณ์ ไม่ระบุเฉพาะ เช่น อื่น ๆ ต่าง ๆ นานา ใด ไหน",
+      "ตัวอย่าง: หนังสืออื่น ๆ, บ้านไหน, ธัญพืชต่าง ๆ, หนังสือเล่มใด",
+      "เปรียบเทียบ: “นี่คือหนังสือ” นี่ใช้แทนนามจึงเป็นสรรพนาม; “หนังสือเล่มนี้” นี้ขยายนามจึงเป็นคำบอกกำหนด"
+    ],
+    questions: [
+      { q: "ใน “หนังสือเล่มนี้น่าสนใจ” คำว่า “นี้” เป็นอะไร?", choices: ["คำบอกกำหนดชี้เฉพาะ", "คำสรรพนาม", "คำอุทาน"], answer: 0, explain: "นี้ขยายนามวลีหนังสือเล่มเพื่อชี้เฉพาะหนังสือเล่มนั้น" },
+      { q: "คำใดเป็นคำบอกกำหนดไม่ชี้เฉพาะ?", choices: ["ต่าง ๆ", "คนนั้น", "เล่มนี้"], answer: 0, explain: "ต่าง ๆ ขยายนามโดยไม่ระบุว่าเป็นสิ่งใดอย่างเจาะจง" },
+      { q: "ใน “นี่คือหนังสือของฉัน” คำว่า “นี่” ทำหน้าที่อะไร?", choices: ["ใช้แทนนาม เป็นสรรพนาม", "ขยายนาม", "บอกลำดับ"], answer: 0, explain: "นี่ใช้แทนนามโดยตรง จึงเป็นคำสรรพนามชี้เฉพาะ" }
+    ]
+  },
+  {
+    title: "ท่าเรือบุพบท", icon: "🚤",
+    summary: "คำบุพบทหรือบุรพบทปรากฏอยู่หน้านาม เพื่อบอกตำแหน่ง หน้าที่ หรือความเกี่ยวข้องของคำในประโยค",
+    lesson: [
+      "คำบุพบทแสดงความสัมพันธ์ระหว่างคำนามหรือกลุ่มคำนามกับคำอื่นในประโยค",
+      "บอกความเกี่ยวข้องระหว่างบุคคล เช่น กับ แก่ แด่ ต่อ: มาโรงเรียนกับน้อง, มอบรางวัลแก่นักเรียน",
+      "บอกตำแหน่ง เช่น บน ใน ใต้ ล่าง เหนือ: นอนบนเตียง, แมวอยู่ใต้โต๊ะ, หนังสืออยู่ในกระเป๋า",
+      "บอกจุดประสงค์หรือผู้รับประโยชน์ เช่น เพื่อ เผื่อ สำหรับ: ทำงานเพื่อลูก, เตรียมอาหารเผื่อเพื่อน",
+      "บอกความเป็นเจ้าของ เช่น ของ; บอกวิธีการหรือเครื่องมือ เช่น โดย ด้วย ตาม",
+      "คำบุพบทแสดงความสัมพันธ์กับนาม ส่วนคำเชื่อมใช้เชื่อมคำ วลี หรือประโยค"
+    ],
+    questions: [
+      { q: "ใน “แมวอยู่ใต้โต๊ะ” คำว่า “ใต้” แสดงอะไร?", choices: ["ตำแหน่งหรือสถานที่", "ความเป็นเจ้าของ", "คำถาม"], answer: 0, explain: "ใต้บอกตำแหน่งของแมวเมื่อเทียบกับโต๊ะ" },
+      { q: "ใน “ฉันตัดกระดาษด้วยกรรไกร” คำว่า “ด้วย” บอกอะไร?", choices: ["เครื่องมือ", "ลำดับ", "ผู้พูด"], answer: 0, explain: "ด้วยกรรไกรแสดงเครื่องมือที่ใช้ตัดกระดาษ" },
+      { q: "ใน “หนังสือของนักเรียน” คำว่า “ของ” แสดงอะไร?", choices: ["ความเป็นเจ้าของหรือความเกี่ยวข้อง", "การชักชวน", "เวลา"], answer: 0, explain: "ของแสดงความเป็นเจ้าของหรือความเกี่ยวข้องของหนังสือกับนักเรียน" }
+    ]
+  },
+  {
+    title: "สะพานคำเชื่อม", icon: "🪢",
+    summary: "คำเชื่อมใช้เชื่อมคำ วลี หรือประโยค เพื่อให้ข้อความสัมพันธ์ต่อเนื่องและสื่อความหมายได้ชัดเจน",
+    lesson: [
+      "คำเชื่อมสมภาคเชื่อมคำตั้งแต่ 2 คำขึ้นไปที่เป็นคำชนิดเดียวกัน เช่น กับ และ หรือ แต่",
+      "คำเชื่อมอนุประโยคนำหน้าอนุประโยคในประโยคซ้อน แบ่งเป็นนามานุประโยค (ที่ ว่า ให้), คุณานุประโยค (ที่ ซึ่ง อัน) และวิเศษณานุประโยค (เพราะ ถ้า จน กระทั่ง เมื่อ ขณะที่)",
+      "ตัวอย่าง: เขาบอกว่าเขาจะมา (นามานุประโยค); เด็กที่ได้รับรางวัล (คุณานุประโยค); เขาไม่มาทำงานเพราะลูกไม่สบาย (วิเศษณานุประโยค)",
+      "คำเชื่อมเสริมเพิ่มความสัมพันธ์ เช่น จึง เลย ถึง ก็ แบบว่า",
+      "คำเชื่อมสัมพันธสารเชื่อมประโยคตั้งแต่ 2 ประโยคขึ้นไป เช่น กล่าวคือ อย่างไรก็ตาม แม้กระนั้น ในที่สุด ทว่า แต่ทว่า ทั้งนี้ อนึ่ง",
+      "คำบางคำอาจเป็นคำเชื่อมหรือคำชนิดอื่นได้ ต้องพิจารณาหน้าที่และตำแหน่งในประโยค"
+    ],
+    questions: [
+      { q: "ใน “พ่อและแม่” คำว่า “และ” เป็นคำเชื่อมชนิดใด?", choices: ["คำเชื่อมสมภาค", "คำเชื่อมเสริม", "คำเชื่อมสัมพันธสาร"], answer: 0, explain: "และเชื่อมคำนามสองคำที่เป็นคำชนิดเดียวกัน" },
+      { q: "ใน “เขาบอกว่าเขาจะมา” คำว่า “ว่า” นำหน้านามานุประโยคหรือไม่?", choices: ["ใช่", "ไม่ใช่ เป็นคำบุพบท", "เป็นคำลงท้าย"], answer: 0, explain: "ว่า นำหน้านามานุประโยคซึ่งเป็นเนื้อหาที่เขาบอก" },
+      { q: "ใน “เขาไม่มาทำงานเพราะลูกไม่สบาย” คำว่า “เพราะ” เชื่อมอะไร?", choices: ["วิเศษณานุประโยคแสดงเหตุผล", "คำเชื่อมสมภาค", "คำลักษณนาม"], answer: 0, explain: "เพราะนำหน้าข้อความที่อธิบายเหตุผลของการไม่มาทำงาน" }
+    ]
+  },
+  {
+    title: "โรงละครคำลงท้าย", icon: "🎭",
+    summary: "คำลงท้ายปรากฏท้ายสุดของประโยค เพื่อแสดงเจตนา ความรู้สึก หรือมารยาทของผู้พูด",
+    lesson: [
+      "คำลงท้ายแบ่งเป็นคำลงท้ายแสดงทัศนภาวะและคำลงท้ายแสดงมารยาท",
+      "คำแสดงทัศนภาวะ เช่น ซิ นะ เถอะ ล่ะ: ซิใช้สั่งหรือเร่งเร้า, นะใช้ชักชวนหรือขอร้อง, เถอะใช้ชักชวนหรือเสนอ, ล่ะใช้ถามหรือเน้นสิ่งที่อยากทราบ",
+      "ตัวอย่าง: เข้ามาซิ, ไปด้วยกันนะ, รีบกลับบ้านเถอะ, เงินทอนล่ะ",
+      "คำลงท้ายแสดงมารยาท เช่น ครับ ค่ะ ย่ะ ขอรับ ขา จ้า จ๋า",
+      "เลือกใช้ให้เหมาะกับผู้พูด ผู้ฟัง และสถานการณ์ เช่น สวัสดีครับ, ขอบคุณค่ะ, คุณแม่ขา, ได้จ้ะ"
+    ],
+    questions: [
+      { q: "ใน “เข้ามาซิ” คำว่า “ซิ” แสดงอะไร?", choices: ["สั่งหรือเร่งเร้า", "บอกจำนวน", "บอกสถานที่"], answer: 0, explain: "ซิเป็นคำลงท้ายแสดงทัศนภาวะ ใช้สั่งหรือเร่งเร้า" },
+      { q: "ใน “ไปด้วยกันนะ” คำว่า “นะ” ช่วยแสดงอะไร?", choices: ["ชักชวนหรือขอร้อง", "การปฏิเสธ", "เครื่องมือ"], answer: 0, explain: "นะช่วยแสดงน้ำเสียงเชิงชักชวนหรือขอร้อง" },
+      { q: "คำใดเป็นคำลงท้ายแสดงมารยาท?", choices: ["ขอรับ", "เถอะ", "ล่ะ"], answer: 0, explain: "ขอรับเป็นคำลงท้ายที่ใช้แสดงมารยาทหรือความสุภาพ" }
+    ]
+  },
+  {
+    title: "ถ้ำคำอุทาน", icon: "😮",
+    summary: "คำอุทานเปล่งออกมาเพื่อแสดงอารมณ์และความรู้สึก เช่น ตกใจ ดีใจ เสียใจ สงสัย ประหลาดใจ เจ็บปวด และเห็นใจ",
+    lesson: [
+      "แสดงความสะเทือนใจ: ตายจริง! อนิจจา! โธ่!",
+      "แสดงความตกใจ: ว้าย! ช่วยด้วย! อุ๊ย!",
+      "แสดงความดีใจ: ไชโย! เย้! ว้าว!",
+      "แสดงความเห็นใจ: โถ! โธ่! น่าสงสาร!",
+      "แสดงความสงสัย: ฮึ! หือ? เอ๊ะ!; ประหลาดใจ: โอ้โฮ! โอ้โห! ว้าว!",
+      "แสดงความเจ็บปวด: โอ๊ย! อุ๊ย! โอย! มักมีเครื่องหมายอัศเจรีย์ (!) แต่บริบทและน้ำเสียงก็สำคัญ"
+    ],
+    questions: [
+      { q: "คำใดแสดงความดีใจ?", choices: ["ไชโย!", "ว้าย!", "โอ๊ย!"], answer: 0, explain: "ไชโย! ใช้แสดงความดีใจหรือยินดี" },
+      { q: "คำใดแสดงความสงสัย?", choices: ["เอ๊ะ!", "เย้!", "โถ!"], answer: 0, explain: "เอ๊ะ! ใช้เมื่อผู้พูดสงสัยหรือไม่แน่ใจ" },
+      { q: "คำใดแสดงความเจ็บปวด?", choices: ["โอ๊ย!", "กล่าวคือ", "สำหรับ"], answer: 0, explain: "โอ๊ย! เป็นคำอุทานแสดงความเจ็บปวด" }
+    ]
+  },
+  {
+    title: "ปราสาทคำปฏิเสธ", icon: "🏰",
+    summary: "คำปฏิเสธใช้บอกปัดหรือไม่ยอมรับข้อความ การกระทำ หรือสิ่งที่มีผู้กล่าวถึง",
+    lesson: [
+      "คำปฏิเสธแบ่งเป็นคำปฏิเสธกริยาและคำปฏิเสธข้อความ",
+      "คำปฏิเสธกริยา ได้แก่ มิ ไม่ หาไม่ ใช้ปฏิเสธการกระทำหรือสภาพ เช่น ฉันไม่ชอบกินผัก, นักเรียนไม่มาโรงเรียน, เขาเดินไม่ระวัง",
+      "คำปฏิเสธข้อความ ได้แก่ หามิได้ มิได้ เปล่า มักใช้ตอบคำถามหรือปฏิเสธข้อความที่ผู้ถามกล่าวถึง",
+      "ตัวอย่าง: “คุณมากับภรรยาหรือ” — “หามิได้”; “คุณดูเหนื่อยนะ” — “เปล่า”; “เธอทำการบ้านเสร็จแล้วหรือ” — “มิได้”",
+      "ต้องพิจารณาหน้าที่ของคำในประโยค ไม่ควรจำแนกจากรูปคำเพียงอย่างเดียว"
+    ],
+    questions: [
+      { q: "ใน “นักเรียนไม่มาโรงเรียน” คำว่า “ไม่” เป็นอะไร?", choices: ["คำปฏิเสธกริยา", "คำปฏิเสธข้อความ", "คำเชื่อม"], answer: 0, explain: "ไม่ปฏิเสธการกระทำที่แสดงด้วยกริยา “มา”" },
+      { q: "คำใดมักใช้ตอบปฏิเสธข้อความ?", choices: ["เปล่า", "กำลัง", "บน"], answer: 0, explain: "เปล่ามักใช้ปฏิเสธข้อความหรือคำถามที่ผู้พูดได้รับ" },
+      { q: "ใน “คุณมากับภรรยาหรือ — หามิได้” คำว่า “หามิได้” ทำหน้าที่อะไร?", choices: ["ปฏิเสธข้อความ", "บอกลำดับ", "แสดงการชักชวน"], answer: 0, explain: "หามิได้ใช้ปฏิเสธข้อความที่ผู้ถามกล่าวถึง" }
+    ]
+  }
+];
+
+let game = loadGame();
+let chosenId = game.characterId || null;
+let stageIndex = 0;
+let questionIndex = 0;
+let correctCount = 0;
+let hasAnswered = false;
+
+function loadGame() {
+  try {
+    return JSON.parse(localStorage.getItem("thaiTreasureGameFinal")) ||
+      { characterId: null, unlocked: 0, completed: [], score: 0 };
+  } catch {
+    return { characterId: null, unlocked: 0, completed: [], score: 0 };
+  }
+}
+
+function saveGame() {
+  localStorage.setItem("thaiTreasureGameFinal", JSON.stringify(game));
+  updateStatus();
+  drawMarkers();
+}
+
+function avatar(person, accessory = true) {
+  const hairShapes = [
+    `<path d="M15 43Q12 8 38 7Q63 7 61 43L56 61H20Z" fill="${person.hair}"/>`,
+    `<path d="M15 38Q14 8 38 8Q62 8 62 37L54 28Q40 18 23 30Z" fill="${person.hair}"/>`,
+    `<path d="M15 39Q13 7 38 7Q63 7 61 40L57 69H49L51 31Q37 19 23 31L26 69H18Z" fill="${person.hair}"/>`
+  ][person.hairStyle];
+
+  return `<svg class="portrait" viewBox="0 0 76 82" aria-hidden="true">
+    ${hairShapes}
+    <path d="M16 77Q18 54 38 54Q58 54 60 77Z" fill="${person.shirt}" stroke="#594432" stroke-width="2"/>
+    <path d="M10 29Q38 3 66 29L62 35H14Z" fill="#8b5831" stroke="#57391f" stroke-width="3"/>
+    <path d="M18 28Q38 10 58 28" fill="none" stroke="#f1c15f" stroke-width="3"/>
+    <ellipse cx="38" cy="40" rx="21" ry="24" fill="${person.skin}" stroke="#68442f" stroke-width="2"/>
+    <path d="M18 36Q20 14 39 14Q54 14 59 32Q48 24 39 25Q27 24 18 36Z" fill="${person.hair}"/>
+    <ellipse cx="30" cy="41" rx="3" ry="4" fill="#33271f"/>
+    <ellipse cx="46" cy="41" rx="3" ry="4" fill="#33271f"/>
+    <path d="M31 50Q38 56 46 50" fill="none" stroke="#9a453d" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="24" cy="49" r="4" fill="#ee827e" opacity=".7"/>
+    <circle cx="52" cy="49" r="4" fill="#ee827e" opacity=".7"/>
+    <path d="M18 71 8 79M58 71 68 79" stroke="#68442f" stroke-width="4" stroke-linecap="round"/>
+    ${accessory ? `<circle cx="58" cy="62" r="9" fill="#f6d05b" stroke="#fff" stroke-width="2"/><text x="58" y="66" text-anchor="middle" font-size="11">${person.accessory}</text>` : ""}
+  </svg>`;
+}
+
+function renderCharacters() {
+  document.getElementById("characterList").innerHTML = explorers.map((person, i) => `
+    <button class="character-card ${chosenId === i ? "selected" : ""}" onclick="chooseCharacter(${i})">
+      ${avatar(person)}
+      <strong>${person.name}</strong>
+      <small>${person.job}</small>
+    </button>
+  `).join("");
+  document.getElementById("startBtn").disabled = chosenId === null;
+}
+
+function chooseCharacter(i) {
+  chosenId = i;
+  document.querySelectorAll(".character-card").forEach((el, n) => el.classList.toggle("selected", i === n));
+  document.getElementById("startBtn").disabled = false;
+}
+
+function startGame() {
+  if (chosenId === null) return;
+  game.characterId = chosenId;
+  localStorage.setItem("thaiTreasureGameFinal", JSON.stringify(game));
+  document.getElementById("chooseScreen").classList.add("hidden");
+  document.getElementById("mapScreen").classList.remove("hidden");
+  updateStatus();
+  drawMarkers();
+}
+
+function updateStatus() {
+  const person = explorers[game.characterId];
+  document.getElementById("welcome").textContent = person
+    ? `🧭 ${person.name} นักสำรวจของเรา พร้อมออกเดินทาง!`
+    : "เลือกนักสำรวจก่อนออกเดินทาง";
+  document.getElementById("mapWelcome").textContent = person
+    ? `ยินดีต้อนรับ ${person.name} ${person.accessory} แตะจุดหมายเพื่อเริ่มภารกิจ`
+    : "พร้อมออกเดินทางหรือยัง?";
+  document.getElementById("score").textContent = `⭐ ${game.score} คะแนน`;
+  document.getElementById("progress").textContent = `🗝️ ${game.completed.length}/12 จุดหมาย`;
+}
+
+function drawMarkers() {
+  const map = document.getElementById("map");
+  if (!map || document.getElementById("mapScreen").classList.contains("hidden")) return;
+
+  map.querySelectorAll(".marker").forEach(el => el.remove());
+  levels.forEach((level, i) => {
+    const done = game.completed.includes(i);
+    const unlocked = i <= game.unlocked || done;
+    const btn = document.createElement("button");
+    btn.className = `marker ${done ? "done" : ""}`;
+    btn.style.left = `${nodePositions[i][0]}%`;
+    btn.style.top = `${nodePositions[i][1]}%`;
+    btn.setAttribute("aria-label", `ด่าน ${i + 1} ${level.title}`);
+    btn.innerHTML = `<span class="marker-icon">${done ? "✓" : (unlocked ? level.icon : "🔒")}</span><span class="marker-num">${i + 1}</span>`;
+    btn.disabled = !unlocked;
+    if (unlocked) btn.onclick = () => openStage(i);
+    map.appendChild(btn);
+  });
+
+  placeToken();
+}
+
+const nodePositions = [
+  [15, 72], [39, 81], [69, 68], [79, 55],
+  [36, 53], [15, 59], [69, 40], [78, 29],
+  [49, 34], [17, 34], [42, 24], [71, 19]
+];
+
+function placeToken() {
+  const token = document.getElementById("playerToken");
+  if (!token || document.getElementById("mapScreen").classList.contains("hidden") || game.characterId === null) return;
+
+  const person = explorers[game.characterId];
+  token.innerHTML = avatar(person, false);
+  token.title = person.name;
+
+  if (game.completed.length === 0) {
+    token.style.left = "9%";
+    token.style.top = "90%";
+  } else if (game.completed.length >= levels.length) {
+    token.style.left = "84%";
+    token.style.top = "83%";
+  } else {
+    const last = Math.min(game.unlocked - 1, levels.length - 1);
+    token.style.left = `${nodePositions[last][0]}%`;
+    token.style.top = `${nodePositions[last][1]}%`;
+  }
+  token.style.display = "block";
+}
+
+function openStage(i) {
+  const unlocked = i <= game.unlocked || game.completed.includes(i);
+  if (!unlocked) return;
+
+  stageIndex = i;
+  questionIndex = 0;
+  correctCount = 0;
+  renderQuestion();
+  document.getElementById("overlay").classList.add("show");
+}
+
+function renderQuestion() {
+  hasAnswered = false;
+  const level = levels[stageIndex];
+  const q = level.questions[questionIndex];
+  const guide = guides[stageIndex];
+
+  document.getElementById("stageKicker").textContent =
+    `จุดหมาย ${stageIndex + 1} จาก 12 · ผู้มอบภารกิจ: ${guide}`;
+  document.getElementById("stageTitle").textContent = `${level.icon} ${level.title}`;
+  document.getElementById("guideNote").innerHTML =
+    `<strong>${guide}:</strong> ${level.summary}`;
+  document.getElementById("lessonBody").innerHTML =
+    `<p><strong>ความรู้ของด่าน:</strong> ${level.summary}</p><ul>${level.lesson.map(x => `<li>${x}</li>`).join("")}</ul>`;
+
+  document.getElementById("questKicker").textContent =
+    `ภารกิจ ${questionIndex + 1}/${level.questions.length} · อ่านบทเรียนด้านบนก่อนตอบได้`;
+  document.getElementById("question").textContent = q.q;
+  document.getElementById("answers").innerHTML = q.choices.map((choice, i) =>
+    `<button class="answer" id="answer${i}" onclick="answerQuestion(${i})">${["ก", "ข", "ค", "ง"][i]}. ${choice}</button>`
+  ).join("");
+
+  const feedback = document.getElementById("feedback");
+  feedback.className = "feedback";
+  feedback.textContent = "";
+  document.getElementById("retryBtn").classList.add("hidden");
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("nextBtn").textContent =
+    questionIndex === level.questions.length - 1 ? "รับกุญแจและเดินต่อ 🗝️" : "ข้อต่อไป ➜";
+}
+
+function answerQuestion(i) {
+  if (hasAnswered) return;
+  const q = levels[stageIndex].questions[questionIndex];
+  const correct = i === q.answer;
+  const feedback = document.getElementById("feedback");
+
+  if (!correct) {
+    const chosenButton = document.getElementById(`answer${i}`);
+    chosenButton.classList.add("wrong");
+    chosenButton.disabled = true;
+    feedback.className = "feedback show try";
+    feedback.innerHTML = `<strong>ยังไม่ใช่ ลองอีกครั้งได้ ไม่เสียหัวใจนะ 🌱</strong><br>${q.explain}`;
+    document.getElementById("retryBtn").classList.remove("hidden");
+    return;
+  }
+
+  hasAnswered = true;
+  correctCount++;
+  q.choices.forEach((_, n) => {
+    const button = document.getElementById(`answer${n}`);
+    button.disabled = true;
+    if (n === q.answer) button.classList.add("correct");
+  });
+
+  feedback.className = "feedback show good";
+  feedback.innerHTML = `<strong>ถูกต้อง! ทางเดินเปิดแล้ว ✨</strong><br>${q.explain}`;
+  document.getElementById("nextBtn").classList.remove("hidden");
+}
+
+function retryQuestion() {
+  document.getElementById("feedback").className = "feedback";
+  document.getElementById("retryBtn").classList.add("hidden");
+}
+
+function nextQuestion() {
+  const level = levels[stageIndex];
+  if (questionIndex < level.questions.length - 1) {
+    questionIndex++;
+    renderQuestion();
+  } else {
+    finishStage();
+  }
+}
+
+function finishStage() {
+  if (!game.completed.includes(stageIndex)) {
+    game.completed.push(stageIndex);
+    game.score += correctCount * 10;
+  }
+  game.unlocked = Math.max(game.unlocked, Math.min(stageIndex + 1, levels.length - 1));
+  saveGame();
+
+  if (game.completed.length === levels.length) {
+    document.getElementById("stageKicker").textContent = "ภารกิจสุดท้ายสำเร็จ!";
+    document.getElementById("stageTitle").textContent = "🏆 เปิดหีบสมบัติได้แล้ว!";
+    document.getElementById("guideNote").innerHTML =
+      "ยินดีด้วย! นักสำรวจพิชิตครบทั้ง 12 ชนิดคำ และพบขุมทรัพย์แห่งความรู้แล้ว 💎";
+    document.getElementById("lessonBody").innerHTML =
+      "<p>เก่งมากค่ะ! หนูเดินทางครบทั้ง 12 ด่านแล้ว</p>";
+    document.getElementById("question").textContent = "ตอนนี้หนูเป็นนักล่าสมบัติผู้เชี่ยวชาญเรื่องชนิดคำแล้ว!";
+  } else {
+    document.getElementById("stageKicker").textContent = "ภารกิจสำเร็จ!";
+    document.getElementById("stageTitle").textContent = `🗝️ ผ่านด่าน ${stageIndex + 1} แล้ว`;
+    document.getElementById("guideNote").innerHTML =
+      `ได้รับกุญแจความรู้และเปิดเส้นทางไปยัง <strong>${levels[stageIndex + 1].title}</strong> แล้ว`;
+    document.getElementById("lessonBody").innerHTML =
+      `<p>ด่านนี้ตอบถูก ${correctCount} จาก ${levels[stageIndex].questions.length} ข้อ</p><p>กลับไปแผนที่เพื่อเดินทางต่อได้เลย</p>`;
+    document.getElementById("question").textContent = "แตะปุ่มด้านล่างเพื่อกลับไปยังแผนที่";
+  }
+
+  document.getElementById("questKicker").textContent = "รางวัล: กุญแจความรู้ 🗝️";
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").className = "feedback";
+  document.getElementById("retryBtn").classList.add("hidden");
+
+  const next = document.getElementById("nextBtn");
+  next.textContent = game.completed.length === levels.length ? "ชมแผนที่สมบัติ 🏆" : "กลับไปเดินทางต่อ ➜";
+  next.classList.remove("hidden");
+  next.onclick = () => {
+    next.onclick = nextQuestion;
+    closeModal();
+    updateStatus();
+    drawMarkers();
+  };
+}
+
+function closeModal() {
+  document.getElementById("overlay").classList.remove("show");
+}
+
+function changeCharacter() {
+  document.getElementById("mapScreen").classList.add("hidden");
+  document.getElementById("chooseScreen").classList.remove("hidden");
+  chosenId = game.characterId;
+  renderCharacters();
+}
+
+function resetGame() {
+  if (!confirm("ล้างคะแนนและความคืบหน้าทั้งหมด แล้วเริ่มใหม่หรือไม่?")) return;
+  localStorage.removeItem("thaiTreasureGameFinal");
+  game = { characterId: null, unlocked: 0, completed: [], score: 0 };
+  chosenId = null;
+  document.getElementById("mapScreen").classList.add("hidden");
+  document.getElementById("chooseScreen").classList.remove("hidden");
+  renderCharacters();
+  updateStatus();
+}
+
+document.getElementById("overlay").addEventListener("click", event => {
+  if (event.target.id === "overlay") closeModal();
+});
+
+renderCharacters();
+updateStatus();
+
+if (game.characterId !== null) {
+  chosenId = game.characterId;
+  document.getElementById("chooseScreen").classList.add("hidden");
+  document.getElementById("mapScreen").classList.remove("hidden");
+  drawMarkers();
+}
+</script>
+</body>
+</html>
